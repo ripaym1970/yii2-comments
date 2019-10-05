@@ -16,8 +16,8 @@ use yii2mod\comments\traits\ModuleTrait;
  *
  * @package yii2mod\comments\widgets
  */
-class Comment extends Widget
-{
+class Comment extends Widget {
+
     use ModuleTrait;
 
     /**
@@ -100,8 +100,7 @@ class Comment extends Widget
     /**
      * Initializes the widget params.
      */
-    public function init()
-    {
+    public function init() {
         parent::init();
 
         if (empty($this->model)) {
@@ -134,13 +133,12 @@ class Comment extends Widget
      *
      * @return string the result of widget execution to be outputted
      */
-    public function run()
-    {
+    public function run() {
         $commentClass = $this->getModule()->commentModelClass;
         $commentModel = Yii::createObject([
             'class' => $commentClass,
             'entity' => $this->entity,
-            'entityId' => $this->entityId,
+            'entity_id' => $this->entityId,
         ]);
         $commentDataProvider = $this->getCommentDataProvider($commentClass);
 
@@ -161,20 +159,18 @@ class Comment extends Widget
      *
      * @return string
      */
-    protected function getEncryptedEntity()
-    {
+    protected function getEncryptedEntity() {
         return utf8_encode(Yii::$app->getSecurity()->encryptByKey(Json::encode([
-            'entity' => $this->entity,
-            'entityId' => $this->entityId,
-            'relatedTo' => $this->relatedTo,
+            'entity'     => $this->entity,
+            'entity_id'  => $this->entityId,
+            'related_to' => $this->relatedTo,
         ]), $this->getModule()->id));
     }
 
     /**
      * Register assets.
      */
-    protected function registerAssets()
-    {
+    protected function registerAssets() {
         $view = $this->getView();
         CommentAsset::register($view);
         $view->registerJs("jQuery('#{$this->commentWrapperId}').comment({$this->getClientOptions()});");
@@ -183,8 +179,7 @@ class Comment extends Widget
     /**
      * @return string
      */
-    protected function getClientOptions()
-    {
+    protected function getClientOptions() {
         $this->clientOptions['pjaxContainerId'] = '#' . $this->pjaxContainerId;
         $this->clientOptions['formSelector'] = '#' . $this->formId;
 
@@ -198,8 +193,7 @@ class Comment extends Widget
      *
      * @return ArrayDataProvider
      */
-    protected function getCommentDataProvider($commentClass)
-    {
+    protected function getCommentDataProvider($commentClass) {
         $dataProvider = new ArrayDataProvider($this->dataProviderConfig);
         if (!isset($this->dataProviderConfig['allModels'])) {
             $dataProvider->allModels = $commentClass::getTree($this->entity, $this->entityId, $this->maxLevel);

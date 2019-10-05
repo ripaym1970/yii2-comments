@@ -13,9 +13,10 @@ use yii2mod\moderation\enums\Status;
 
 $this->title = Yii::t('yii2mod.comments', 'Comments Management');
 $this->params['breadcrumbs'][] = $this->title;
-?>
-<div class="comments-index">
 
+?>
+
+<div class="comments-index">
     <h1><?php echo Html::encode($this->title); ?></h1>
     <?php Pjax::begin(['timeout' => 10000]); ?>
     <?php echo GridView::widget([
@@ -33,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return StringHelper::truncate($model->content, 100);
                 },
             ],
-            'attribute' => 'relatedTo',
+            'attribute' => 'related_to',
             [
                 'attribute' => 'createdBy',
                 'value' => function ($model) {
@@ -51,9 +52,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'filterInputOptions' => ['prompt' => Yii::t('yii2mod.comments', 'Select Status'), 'class' => 'form-control'],
             ],
             [
-                'attribute' => 'createdAt',
+                'attribute' => 'created_at',
                 'value' => function ($model) {
-                    return Yii::$app->formatter->asDatetime($model->createdAt);
+                    return Yii::$app->formatter->asDatetime($model->created_at);
                 },
                 'filter' => false,
             ],

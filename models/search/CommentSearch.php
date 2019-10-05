@@ -10,8 +10,8 @@ use yii2mod\comments\models\CommentModel;
  *
  * @package yii2mod\comments\models\search
  */
-class CommentSearch extends CommentModel
-{
+class CommentSearch extends CommentModel {
+
     /**
      * @var int the default page size
      */
@@ -20,11 +20,10 @@ class CommentSearch extends CommentModel
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['id', 'createdBy', 'status'], 'integer'],
-            [['content', 'relatedTo'], 'safe'],
+            [['id', 'created_by', 'status'], 'integer'],
+            [['content', 'related_to'], 'safe'],
         ];
     }
 
@@ -35,8 +34,7 @@ class CommentSearch extends CommentModel
      *
      * @return ActiveDataProvider
      */
-    public function search(array $params)
-    {
+    public function search(array $params) {
         $query = CommentModel::find();
 
         $dataProvider = new ActiveDataProvider([
@@ -58,12 +56,12 @@ class CommentSearch extends CommentModel
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'createdBy' => $this->createdBy,
+            'created_by' => $this->created_by,
             'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'content', $this->content]);
-        $query->andFilterWhere(['like', 'relatedTo', $this->relatedTo]);
+        $query->andFilterWhere(['like', 'related_to', $this->related_to]);
 
         return $dataProvider;
     }

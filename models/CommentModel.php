@@ -20,17 +20,17 @@ use yii2mod\moderation\ModerationQuery;
  *
  * @property int $id
  * @property string $entity
- * @property int $entityId
+ * @property int $entity_id
  * @property string $content
- * @property int $parentId
+ * @property int $parent_id
  * @property int $level
- * @property int $createdBy
- * @property int $updatedBy
- * @property string $relatedTo
+ * @property int $created_by
+ * @property int $updated_by
+ * @property string $related_to
  * @property string $url
  * @property int $status
- * @property int $createdAt
- * @property int $updatedAt
+ * @property int $created_at
+ * @property int $updated_at
  *
  * @method ActiveRecord makeRoot()
  * @method ActiveRecord appendTo($node)
@@ -38,8 +38,8 @@ use yii2mod\moderation\ModerationQuery;
  * @method ModerationBehavior markRejected()
  * @method AdjacencyListBehavior deleteWithChildren()
  */
-class CommentModel extends ActiveRecord
-{
+class CommentModel extends ActiveRecord {
+
     use ModuleTrait;
 
     const SCENARIO_MODERATION = 'moderation';
@@ -52,40 +52,37 @@ class CommentModel extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return '{{%comment}}';
     }
 
     /**
      * @inheritdoc
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['entity', 'entityId'], 'required'],
+            [['entity', 'entity_id'], 'required'],
             ['content', 'required', 'message' => Yii::t('yii2mod.comments', 'Comment cannot be blank.')],
-            [['content', 'entity', 'relatedTo', 'url'], 'string'],
+            [['content', 'entity', 'related_to', 'url'], 'string'],
             ['status', 'default', 'value' => Status::APPROVED],
             ['status', 'in', 'range' => Status::getConstantsByName()],
             ['level', 'default', 'value' => 1],
-            ['parentId', 'validateParentID', 'except' => static::SCENARIO_MODERATION],
-            [['entityId', 'parentId', 'status', 'level'], 'integer'],
+            ['parent_id', 'validateparent_id', 'except' => static::SCENARIO_MODERATION],
+            [['entity_id', 'parent_id', 'status', 'level'], 'integer'],
         ];
     }
 
     /**
      * @param $attribute
      */
-    public function validateParentID($attribute)
-    {
+    public function validateParentID($attribute) {
         if (null !== $this->{$attribute}) {
             $parentCommentExist = static::find()
                 ->approved()
                 ->andWhere([
                     'id' => $this->{$attribute},
                     'entity' => $this->entity,
-                    'entityId' => $this->entityId,
+                    'entity_id' => $this->entity_id,
                 ])
                 ->exists();
 
@@ -98,8 +95,7 @@ class CommentModel extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'blameable' => [
                 'class' => BlameableBehavior::class,
@@ -108,8 +104,8 @@ class CommentModel extends ActiveRecord
             ],
             'timestamp' => [
                 'class' => TimestampBehavior::class,
-                'createdAtAttribute' => 'createdAt',
-                'updatedAtAttribute' => 'updatedAt',
+                'createdAtAttribute' => 'created_at',
+                'updatedAtAttribute' => 'updated_at',
             ],
             'purify' => [
                 'class' => PurifyBehavior::class,
@@ -124,7 +120,7 @@ class CommentModel extends ActiveRecord
             ],
             'adjacencyList' => [
                 'class' => AdjacencyListBehavior::class,
-                'parentAttribute' => 'parentId',
+                'parentAttribute' => 'parent_id',
                 'sortable' => false,
             ],
             'moderation' => [
@@ -137,22 +133,21 @@ class CommentModel extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
-            'id' => Yii::t('yii2mod.comments', 'ID'),
-            'content' => Yii::t('yii2mod.comments', 'Content'),
-            'entity' => Yii::t('yii2mod.comments', 'Entity'),
-            'entityId' => Yii::t('yii2mod.comments', 'Entity ID'),
-            'parentId' => Yii::t('yii2mod.comments', 'Parent ID'),
-            'status' => Yii::t('yii2mod.comments', 'Status'),
-            'level' => Yii::t('yii2mod.comments', 'Level'),
-            'createdBy' => Yii::t('yii2mod.comments', 'Created by'),
-            'updatedBy' => Yii::t('yii2mod.comments', 'Updated by'),
-            'relatedTo' => Yii::t('yii2mod.comments', 'Related to'),
-            'url' => Yii::t('yii2mod.comments', 'Url'),
-            'createdAt' => Yii::t('yii2mod.comments', 'Created date'),
-            'updatedAt' => Yii::t('yii2mod.comments', 'Updated date'),
+            'id'         => Yii::t('yii2mod.comments', 'ID'),
+            'content'    => Yii::t('yii2mod.comments', 'Content'),
+            'entity'     => Yii::t('yii2mod.comments', 'Entity'),
+            'entity_id'  => Yii::t('yii2mod.comments', 'Entity ID'),
+            'parent_id'  => Yii::t('yii2mod.comments', 'Parent ID'),
+            'status'     => Yii::t('yii2mod.comments', 'Status'),
+            'level'      => Yii::t('yii2mod.comments', 'Level'),
+            'createdBy'  => Yii::t('yii2mod.comments', 'Created by'),
+            'updatedBy'  => Yii::t('yii2mod.comments', 'Updated by'),
+            'related_to' => Yii::t('yii2mod.comments', 'Related to'),
+            'url'        => Yii::t('yii2mod.comments', 'Url'),
+            'created_at' => Yii::t('yii2mod.comments', 'Created date'),
+            'updated_at' => Yii::t('yii2mod.comments', 'Updated date'),
         ];
     }
 
@@ -170,8 +165,8 @@ class CommentModel extends ActiveRecord
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {
-            if ($this->parentId > 0 && $this->isNewRecord) {
-                $parentNodeLevel = static::find()->select('level')->where(['id' => $this->parentId])->scalar();
+            if ($this->parent_id > 0 && $this->isNewRecord) {
+                $parentNodeLevel = static::find()->select('level')->where(['id' => $this->parent_id])->scalar();
                 $this->level += $parentNodeLevel;
             }
 
@@ -201,10 +196,10 @@ class CommentModel extends ActiveRecord
     public function saveComment()
     {
         if ($this->validate()) {
-            if (empty($this->parentId)) {
+            if (empty($this->parent_id)) {
                 return $this->makeRoot()->save();
             } else {
-                $parentComment = static::findOne(['id' => $this->parentId]);
+                $parentComment = static::findOne(['id' => $this->parent_id]);
 
                 return $this->appendTo($parentComment)->save();
             }
@@ -227,21 +222,21 @@ class CommentModel extends ActiveRecord
      * Get comments tree.
      *
      * @param string $entity
-     * @param string $entityId
+     * @param string $entity_id
      * @param null $maxLevel
      *
      * @return array|ActiveRecord[]
      */
-    public static function getTree($entity, $entityId, $maxLevel = null)
+    public static function getTree($entity, $entity_id, $maxLevel = null)
     {
         $query = static::find()
             ->alias('c')
             ->approved()
             ->andWhere([
-                'c.entityId' => $entityId,
+                'c.entity_id' => $entity_id,
                 'c.entity' => $entity,
             ])
-            ->orderBy(['c.parentId' => SORT_ASC, 'c.createdAt' => SORT_ASC])
+            ->orderBy(['c.parent_id' => SORT_ASC, 'c.created_at' => SORT_ASC])
             ->with(['author']);
 
         if ($maxLevel > 0) {
@@ -270,7 +265,7 @@ class CommentModel extends ActiveRecord
         $tree = [];
 
         foreach ($data as $id => $node) {
-            if ($node->parentId == $rootID) {
+            if ($node->parent_id == $rootID) {
                 unset($data[$id]);
                 $node->children = self::buildTree($data, $node->id);
                 $tree[] = $node;
@@ -309,7 +304,7 @@ class CommentModel extends ActiveRecord
      */
     public function getPostedDate()
     {
-        return Yii::$app->formatter->asRelativeTime($this->createdAt);
+        return Yii::$app->formatter->asRelativeTime($this->created_at);
     }
 
     /**
@@ -372,7 +367,7 @@ class CommentModel extends ActiveRecord
     {
         return (int) static::find()
             ->approved()
-            ->andWhere(['entity' => $this->entity, 'entityId' => $this->entityId])
+            ->andWhere(['entity' => $this->entity, 'entity_id' => $this->entity_id])
             ->count();
     }
 
